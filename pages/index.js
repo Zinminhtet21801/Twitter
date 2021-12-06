@@ -21,7 +21,10 @@ export default function Home({ trendingResults, followResults, providers }) {
       <main className="bg-black min-h-screen max-w-[1500px] flex  mx-auto">
         <Sidebar />
         <Feed />
-        <Widget />
+        <Widget
+          trendingResults={trendingResults}
+          followResults={followResults}
+        />
         {isOpen && <Modal />}
       </main>
     </div>
