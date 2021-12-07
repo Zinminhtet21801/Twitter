@@ -1,15 +1,17 @@
 import { useRecoilState } from "recoil";
 import { modalState, postIdState } from "../atoms/modalAtom";
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState, useRef } from "react";
 import {
   onSnapshot,
   doc,
   addDoc,
   collection,
   serverTimestamp,
+  updateDoc,
 } from "@firebase/firestore";
-import { db } from "../firebase";
+import { getDownloadURL, ref, uploadString } from "@firebase/storage";
+import { db, storage } from "../firebase";
 import { useSession } from "next-auth/react";
 import {
   CalendarIcon,
@@ -20,16 +22,40 @@ import {
 } from "@heroicons/react/outline";
 import { useRouter } from "next/router";
 import Moment from "react-moment";
+import "emoji-mart/css/emoji-mart.css";
+import { Picker } from "emoji-mart";
 
 function Modal() {
   const { data: session } = useSession();
+  const imgRef = useRef();
+  const [showEmojis, setShowEmojis] = useState(false);
   const [isOpen, setIsOpen] = useRecoilState(modalState);
   const [postId, setPostId] = useRecoilState(postIdState);
   const [post, setPost] = useState();
   const [comment, setComment] = useState("");
+  const [imageComment, setImageComment] = useState("");
   const router = useRouter();
 
   console.log(postId);
+
+  const addImageToPost = (event) => {
+    const reader = new FileReader();
+    if (event.target.files[0]) {
+      reader.readAsDataURL(event.target.files[0]);
+    }
+
+    reader.onload = (readerEvent) => {
+      setImageComment(readerEvent.target.result);
+    };
+  };
+
+  const addEmoji = (event) => {
+    let sym = event.unified.split("-");
+    let codesArr = [];
+    sym.forEach((e) => codesArr.push("0x" + e));
+    let emoji = String.fromCodePoint(...codesArr);
+    setInput(input + emoji);
+  };
 
   useEffect(
     () =>
@@ -42,13 +68,25 @@ function Modal() {
   const sendComment = async (e) => {
     e.preventDefault();
 
-    await addDoc(collection(db, "posts", postId, "comments"), {
-      comment: comment,
-      username: session.user.name,
-      tag: session.user.tag,
-      userImg: session.user.image,
-      timestamp: serverTimestamp(),
-    });
+    const commentRef = await addDoc(
+      collection(db, "posts", postId, "comments"),
+      {
+        comment: comment,
+        username: session.user.name,
+        tag: session.user.tag,
+        userImg: session.user.image,
+        timestamp: serverTimestamp(),
+      }
+    );
+    const imageRef = ref(storage, `comments/${commentRef.id}/image`);
+    if (imageComment) {
+      await uploadString(imageRef, imageComment, "data_url").then(async () => {
+        const downloadURL = await getDownloadURL(imageRef);
+        await updateDoc(doc(db, "posts", postId, "comments", commentRef.id), {
+          imageComment: downloadURL,
+        });
+      });
+    }
 
     setIsOpen(false);
     setComment("");
@@ -132,24 +170,71 @@ function Modal() {
                         rows="2"
                         className="bg-transparent outline-none text-[#d9d9d9] text-lg placeholder-gray-500 tracking-wide w-full min-h-[80px]"
                       />
+                      {imageComment && (
+                        <div className="relative">
+                          <div className="absolute w-8 h-8 bg-[#15181c] hover:bg-[#272c26] bg-opacity-75 rounded-full flex items-center justify-center top-1 left-1 cursor-pointer ">
+                            <XIcon
+                              className="text-white h-5"
+                              onClick={() => setImageComment(null)}
+                            />
+                          </div>
+                          <img
+                            src={imageComment}
+                            alt=""
+                            className="rounded-2xl max-h-80 object-contain "
+                          />
+                        </div>
+                      )}
 
                       <div className="flex items-center justify-between pt-2.5">
                         <div className="flex items-center">
                           <div className="icon">
-                            <PhotographIcon className="text-[#1d9bf0] h-[22px]" />
+                            <PhotographIcon
+                              className="text-[#1d9bf0] h-[22px]"
+                              onClick={() => imgRef.current.click()}
+                            />
+                            <input
+                              type="file"
+                              ref={imgRef}
+                              hidden
+                              accept="image/*"
+                              onChange={addImageToPost}
+                            />
                           </div>
 
                           <div className="icon rotate-90">
                             <ChartBarIcon className="text-[#1d9bf0] h-[22px]" />
                           </div>
 
-                          <div className="icon">
+                          <div
+                            className="icon"
+                            onClick={() => setShowEmojis(!showEmojis)}
+                          >
                             <EmojiHappyIcon className="text-[#1d9bf0] h-[22px]" />
                           </div>
 
                           <div className="icon">
                             <CalendarIcon className="text-[#1d9bf0] h-[22px]" />
                           </div>
+                          {showEmojis && (
+                            <Picker
+                              onSelect={addEmoji}
+                              style={{
+                                position: "absolute",
+                                marginTop: "465px",
+                                marginLeft: "-40px",
+                                maxWidth: "320px",
+                                borderRadius: "20px",
+                                // position: "relative",
+                                // marginTop: "465px",
+                                // marginLeft: "-40px",
+                                // maxWidth: "320px",
+                                // borderRadius: "20px",
+                                // zIndex : 900
+                              }}
+                              theme="dark"
+                            />
+                          )}
                         </div>
                         <button
                           className="bg-[#1d9bf0] text-white rounded-full px-4 py-1.5 font-bold shadow-md hover:bg-[#1a8cd8] disabled:hover:bg-[#1d9bf0] disabled:opacity-50 disabled:cursor-default"
