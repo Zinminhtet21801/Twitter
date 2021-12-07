@@ -35,6 +35,7 @@ function Modal() {
   const [comment, setComment] = useState("");
   const [imageComment, setImageComment] = useState("");
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   console.log(postId);
 
@@ -68,6 +69,8 @@ function Modal() {
 
   const sendComment = async (e) => {
     e.preventDefault();
+    if (loading) return;
+    setLoading(true);
 
     const commentRef = await addDoc(
       collection(db, "posts", postId, "comments"),
@@ -89,18 +92,21 @@ function Modal() {
       });
     }
 
+    setLoading(false);
     setIsOpen(false);
     setComment("");
 
     router.push(`/${postId}`);
   };
 
+  console.log(loading);
+
   return (
     <div>
       <Transition show={isOpen} as={Fragment}>
         <Dialog
           as="div"
-          className="fixed z-50 inset-0 pt-8"
+          className={`fixed z-50 inset-0 pt-8 `}
           onClose={() => (showEmojis ? setIsOpen(true) : setIsOpen(false))}
         >
           <div className="flex items-start justify-center min-h-[800px] sm:min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -125,7 +131,7 @@ function Modal() {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <div className="inline-block align-bottom bg-black rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full">
+              <div className={`${loading && "opacity-90 "} inline-block align-bottom bg-black rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full`}>
                 <div className="flex items-center px-1.5 py-2 border-b border-gray-700">
                   <div
                     className="hoverAnimation w-9 h-9 flex items-center justify-center xl:px-0"
@@ -191,47 +197,48 @@ function Modal() {
                             />
                           </div>
                         )}
+                        
+                          <div className="flex items-center justify-between pt-2.5">
+                            <div className="flex items-center">
+                              <div className="icon">
+                                <PhotographIcon
+                                  className="text-[#1d9bf0] h-[22px]"
+                                  onClick={() => imgRef.current.click()}
+                                />
+                                <input
+                                  type="file"
+                                  ref={imgRef}
+                                  hidden
+                                  accept="image/*"
+                                  onChange={addImageToPost}
+                                />
+                              </div>
 
-                        <div className="flex items-center justify-between pt-2.5">
-                          <div className="flex items-center">
-                            <div className="icon">
-                              <PhotographIcon
-                                className="text-[#1d9bf0] h-[22px]"
-                                onClick={() => imgRef.current.click()}
-                              />
-                              <input
-                                type="file"
-                                ref={imgRef}
-                                hidden
-                                accept="image/*"
-                                onChange={addImageToPost}
-                              />
+                              <div className="icon rotate-90">
+                                <ChartBarIcon className="text-[#1d9bf0] h-[22px]" />
+                              </div>
+
+                              <div
+                                className="icon"
+                                onClick={() => setShowEmojis(!showEmojis)}
+                              >
+                                <EmojiHappyIcon className="text-[#1d9bf0] h-[22px]" />
+                              </div>
+
+                              <div className="icon">
+                                <CalendarIcon className="text-[#1d9bf0] h-[22px]" />
+                              </div>
                             </div>
-
-                            <div className="icon rotate-90">
-                              <ChartBarIcon className="text-[#1d9bf0] h-[22px]" />
-                            </div>
-
-                            <div
-                              className="icon"
-                              onClick={() => setShowEmojis(!showEmojis)}
+                            <button
+                              className="bg-[#1d9bf0] text-white rounded-full px-4 py-1.5 font-bold shadow-md hover:bg-[#1a8cd8] disabled:hover:bg-[#1d9bf0] disabled:opacity-50 disabled:cursor-default"
+                              type="submit"
+                              onClick={sendComment}
+                              disabled={!comment.trim() && !imageComment}
                             >
-                              <EmojiHappyIcon className="text-[#1d9bf0] h-[22px]" />
-                            </div>
-
-                            <div className="icon">
-                              <CalendarIcon className="text-[#1d9bf0] h-[22px]" />
-                            </div>
+                              Reply
+                            </button>
                           </div>
-                          <button
-                            className="bg-[#1d9bf0] text-white rounded-full px-4 py-1.5 font-bold shadow-md hover:bg-[#1a8cd8] disabled:hover:bg-[#1d9bf0] disabled:opacity-50 disabled:cursor-default"
-                            type="submit"
-                            onClick={sendComment}
-                            disabled={!comment.trim()}
-                          >
-                            Reply
-                          </button>
-                        </div>
+                        
                       </div>
                     </div>
                   </div>
@@ -251,14 +258,14 @@ function Modal() {
         <div className="flex items-start justify-center min-h-[800px] sm:min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           <Dialog.Overlay className="fixed inset-0 bg-opacity-0 transition-opacity" />
           {showEmojis && (
-            <div className="h-screen lg:mt-[21rem] xl:mt-[22rem] sm:mt-80 md:mt-72 mt-[20rem] " >
+            <div className="h-screen lg:mt-[21rem] xl:mt-[22rem] sm:mt-80 md:mt-72 mt-[20rem] ">
               {showEmojis && (
                 <Picker
                   onSelect={addEmoji}
                   style={{
                     maxWidth: "320px",
                     borderRadius: "20px",
-                    minWidth : "300px"
+                    minWidth: "300px",
                   }}
                   theme="dark"
                 />
