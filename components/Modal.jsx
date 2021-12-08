@@ -131,7 +131,11 @@ function Modal() {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <div className={`${loading && "opacity-90 "} inline-block align-bottom bg-black rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full`}>
+              <div
+                className={`${
+                  loading && "opacity-90 "
+                } inline-block align-bottom bg-black rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full`}
+              >
                 <div className="flex items-center px-1.5 py-2 border-b border-gray-700">
                   <div
                     className="hoverAnimation w-9 h-9 flex items-center justify-center xl:px-0"
@@ -197,48 +201,49 @@ function Modal() {
                             />
                           </div>
                         )}
-                        
-                          <div className="flex items-center justify-between pt-2.5">
-                            <div className="flex items-center">
-                              <div className="icon">
-                                <PhotographIcon
-                                  className="text-[#1d9bf0] h-[22px]"
-                                  onClick={() => imgRef.current.click()}
-                                />
-                                <input
-                                  type="file"
-                                  ref={imgRef}
-                                  hidden
-                                  accept="image/*"
-                                  onChange={addImageToPost}
-                                />
-                              </div>
 
-                              <div className="icon rotate-90">
-                                <ChartBarIcon className="text-[#1d9bf0] h-[22px]" />
-                              </div>
-
-                              <div
-                                className="icon"
-                                onClick={() => setShowEmojis(!showEmojis)}
-                              >
-                                <EmojiHappyIcon className="text-[#1d9bf0] h-[22px]" />
-                              </div>
-
-                              <div className="icon">
-                                <CalendarIcon className="text-[#1d9bf0] h-[22px]" />
-                              </div>
+                        <div className="flex items-center justify-between pt-2.5">
+                          <div className="flex items-center">
+                            <div className="icon">
+                              <PhotographIcon
+                                className="text-[#1d9bf0] h-[22px]"
+                                onClick={() => imgRef.current.click()}
+                              />
+                              <input
+                                type="file"
+                                ref={imgRef}
+                                hidden
+                                accept="image/*"
+                                onChange={addImageToPost}
+                              />
                             </div>
-                            <button
-                              className="bg-[#1d9bf0] text-white rounded-full px-4 py-1.5 font-bold shadow-md hover:bg-[#1a8cd8] disabled:hover:bg-[#1d9bf0] disabled:opacity-50 disabled:cursor-default"
-                              type="submit"
-                              onClick={sendComment}
-                              disabled={!comment.trim() && !imageComment}
+
+                            <div className="icon rotate-90">
+                              <ChartBarIcon className="text-[#1d9bf0] h-[22px]" />
+                            </div>
+
+                            <div
+                              className="icon"
+                              onClick={() => setShowEmojis(!showEmojis)}
                             >
-                              Reply
-                            </button>
+                              <EmojiHappyIcon className="text-[#1d9bf0] h-[22px]" />
+                            </div>
+
+                            <div className="icon">
+                              <CalendarIcon className="text-[#1d9bf0] h-[22px]" />
+                            </div>
                           </div>
-                        
+                          <button
+                            className="bg-[#1d9bf0] text-white rounded-full px-4 py-1.5 font-bold shadow-md hover:bg-[#1a8cd8] disabled:hover:bg-[#1d9bf0] disabled:opacity-50 disabled:cursor-default"
+                            type="submit"
+                            onClick={sendComment}
+                            disabled={
+                              loading ? true : !comment.trim() && !imageComment
+                            }
+                          >
+                            Reply
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
