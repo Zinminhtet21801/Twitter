@@ -1,5 +1,7 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import { db } from "../../../firebase";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 
 export default NextAuth({
   providers: [
@@ -18,6 +20,17 @@ export default NextAuth({
       session.user.uid = token.sub;
       return session;
     },
+    async signIn({ user, account, profile, credentials }) {
+      console.log(user);
+      const { id, name, email, image } = user;
+      await setDoc(doc(db, "users", email), {
+        name: name,
+        image : image,
+        id : id,
+        createdAt : serverTimestamp()
+      });
+      return true;
+    },
   },
-  secret : process.env.JWT_SECRET
+  secret: process.env.JWT_SECRET,
 });

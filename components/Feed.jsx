@@ -9,6 +9,7 @@ import Post from "./Post";
 function Feed() {
   const [posts, setPosts] = useState([]);
   const { data: session } = useSession();
+
   useEffect(() => {
     onSnapshot(
       query(collection(db, "posts"), orderBy("timestamp", "desc")),

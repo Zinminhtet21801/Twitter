@@ -61,6 +61,11 @@ function Input() {
       timestamp: serverTimestamp(),
     });
 
+    await addDoc(collection(db, "users", session.user.email, "posts"), {
+      postId: docRef.id,
+      timestamp: serverTimestamp(),
+    });
+
     const imageRef = ref(storage, `posts/${docRef.id}/image`);
     if (selectedFile) {
       await uploadString(imageRef, selectedFile, "data_url").then(async () => {
