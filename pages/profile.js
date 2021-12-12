@@ -1,22 +1,61 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Head from "next/head";
 import { getProviders, getSession, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Sidebar from '../components/Sidebar';
 import Widget from "../components/Widget";
 import { ArrowLeftIcon, CalendarIcon } from "@heroicons/react/outline";
+import { collection, doc, onSnapshot, query, where, getDocs, getDoc, orderBy } from "firebase/firestore";
+import { db } from '../firebase.js'
 
-const profile = ({ trendingResults, followResults, providers }) => {
+const profile = ({ trendingResults, followResults }) => {
 
     const { data: session } = useSession();
+    const [ data, setData ] = useState([]);
+    // const [ filteredData, setFilteredData ] = useState([]);
     const router = useRouter();
-    const { user } = session;
-    console.log(session)
+
+    useEffect(() => {
+            
+        // onSnapshot(collection(db, "users", session.user?.email, "posts"), (doc) => {
+        //     setData(doc.docs);
+        //     // doc.docs.map(postId => setData()
+        // });
+
+        const fetching = async () => {
+            const q = query(
+                collection(db, "posts"),
+                where ("id", "==", session.user.uid),
+            )
+            
+            const querySnapShot = await getDocs(q);
+            const dataArray = [];
+            querySnapShot.forEach(doc => dataArray.push(doc.data()))
+            setData(dataArray.sort(function(x, y) {
+                    return y.timestamp.seconds - x.timestamp.seconds
+            }))
+        }
+        fetching();
+    }, [])
+    
+    // data && setFilteredData(data.sort(function(x, y) {
+    //     return y.timestamp.seconds - x.timestamp.seconds
+    // }))
+
+    console.log(data)
+
+    // console.log(
+    //     data.sort(function(x, y){
+    //         console.log(`x is ${x.timestamp.seconds} and y is ${y.timestamp.seconds}`)
+    //         return y.timestamp.seconds - x.timestamp.seconds;
+    //     })
+    // )
+
     return (
         <div>
             <Head>
                 <title>
-                    {user?.name} / Twitter
+                    {session?.user?.name} / Twitter
                 </title>
                 <link rel="icon" href="https://rb.gy/ogau5a" type="image/icon type"></link>
             </Head>
@@ -33,7 +72,7 @@ const profile = ({ trendingResults, followResults, providers }) => {
                         Tweet
                     </div>
                     <div className='h-64 bg-[#2F3336] pt-40 pl-4'>
-                        <img src={`${user?.image}`} className='w-36 h-auto rounded-full border-2 border-black'/>
+                        <img src={`${session?.user?.image}`} className='w-36 h-auto rounded-full border-2 border-black'/>
                     </div>
                     <div className='flex justify-end py-3 pr-5'>
                         <button className='border border-gray-300 rounded-full py-1 px-4 hover:bg-gray-500 hover:bg-opacity-50 transition ease-linear duration-200'>
@@ -41,8 +80,8 @@ const profile = ({ trendingResults, followResults, providers }) => {
                         </button>
                     </div>
                     <div className='text-gray-300 text-opacity-60 pl-4 pt-4'>
-                        <div><span className='text-xl font-bold text-white'>{user?.name}</span></div>
-                        <div className='pb-2'><span>@{user?.tag}</span></div>
+                        <div><span className='text-xl font-bold text-white'>{session?.user?.name}</span></div>
+                        <div className='pb-2'><span>@{session?.user?.tag}</span></div>
                         <div className='pb-2'>
                             <CalendarIcon className='inline pb-1 pr-1 h-5'/>Joined March 2021
                         </div>
@@ -76,15 +115,13 @@ export async function getServerSideProps(context) {
     const followResults = await fetch("https://jsonkeeper.com/b/WWMJ").then(
       (res) => res.json()
     );
-    const providers = await getProviders();
     const session = await getSession(context);
-  
+    
     return {
       props: {
         trendingResults,
         followResults,
-        providers,
-        session,
+        session
       },
     };
   }

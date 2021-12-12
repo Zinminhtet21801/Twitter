@@ -37,6 +37,7 @@ function Modal() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
+  
   console.log(postId);
 
   const addImageToPost = (event) => {
