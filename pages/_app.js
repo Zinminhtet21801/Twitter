@@ -7,7 +7,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   return (
     <SessionProvider session={session}>
       <RecoilRoot>
-        <NextNProgress />
+        <NextNProgress options={{ showSpinner: false }} />
         <Component {...pageProps} />
       </RecoilRoot>
     </SessionProvider>
