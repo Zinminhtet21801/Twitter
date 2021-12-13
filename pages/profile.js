@@ -37,12 +37,6 @@ const profile = ({ trendingResults, followResults }) => {
         }
         fetching();
     }, [])
-    
-    // data && setFilteredData(data.sort(function(x, y) {
-    //     return y.timestamp.seconds - x.timestamp.seconds
-    // }))
-
-    console.log(data)
 
     // console.log(
     //     data.sort(function(x, y){
