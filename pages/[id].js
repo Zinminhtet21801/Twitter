@@ -49,7 +49,6 @@ function PostPage({ trendingResults, followResults, providers }) {
   );
 
   if (!session) return <Login providers={providers} />;
-
   return (
     <div className="">
       <Head>

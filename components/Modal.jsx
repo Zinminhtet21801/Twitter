@@ -25,7 +25,6 @@ import Moment from "react-moment";
 import "emoji-mart/css/emoji-mart.css";
 import { Picker } from "emoji-mart";
 
-
 function Modal() {
   const { data: session } = useSession();
   const imgRef = useRef();
