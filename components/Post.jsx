@@ -76,7 +76,7 @@ function Post({ id, post, postPage }) {
   return (
     <div
       className="p-3 flex cursor-pointer border-b border-gray-700 "
-      onClick={() => router.push(`/${id}`)}
+      // onClick={() => router.push(`/${id}`)}
     >
       {!postPage && (
         <img
@@ -95,7 +95,7 @@ function Post({ id, post, postPage }) {
             />
           )}
           <div className=" text-[#6e767d] ">
-            <div className="inline-block group">
+            <div className="inline-block group" onClick={() => {router.push(`/profile/${session.user.uid}`)}}>
               <h4
                 className={`font-bold text-[12px] sm:text-base text-[#d9d9d9] group-hover:underline ${
                   !postPage && "inline-block"

@@ -11,8 +11,9 @@ import {
   DotsCircleHorizontalIcon,
   DotsHorizontalIcon,
 } from "@heroicons/react/outline";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import UserProfileButton from "./UserProfileButton";
 
 function Sidebar() {
   const { data: session } = useSession();
@@ -34,27 +35,13 @@ function Sidebar() {
         <SidebarLink text="Messages" Icon={InboxIcon} />
         <SidebarLink text="Bookmarks" Icon={BookmarkIcon} />
         <SidebarLink text="Lists" Icon={ClipboardListIcon} />
-        <SidebarLink text="Profile" Icon={UserIcon} />
+        <SidebarLink text="Profile" Icon={UserIcon} userId={session?.user?.uid} />
         <SidebarLink text="More" Icon={DotsCircleHorizontalIcon} />
       </div>
       <button className="text-lg hidden xl:inline ml-auto bg-[#1d9bf0] rounded-full w-56 h-[52px] font-bold shadow-md hover:bg-[#1a8cd8] ">
         Tweet
       </button>
-      <div
-        className="text-[#d9d9d9] flex items-center justify-center hoverAnimation xl:ml-auto xl:-mr-5 mt-auto"
-        onClick={signOut}
-      >
-        <img
-          src={session?.user?.image}
-          alt=""
-          className="h-10 w-10 rounded-full xl:mr-2.5"
-        />
-        <div className="hidden xl:inline leading-5">
-          <h4 className="font-bold">{session?.user?.name}</h4>
-          <p className="text-[#6e767d]">@{session?.user?.tag}</p>
-        </div>
-        <DotsHorizontalIcon className="h-5 hidden xl:inline pl-10 " />
-      </div>
+      <UserProfileButton hover profile logout={true} avatar={session?.user?.image} name={session?.user?.name} tag={session?.user?.tag} />
     </div>
   );
 }
