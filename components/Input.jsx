@@ -59,6 +59,7 @@ function Input() {
       tag: session.user.tag,
       text: input,
       timestamp: serverTimestamp(),
+      email: session?.user?.email,
     });
 
     await addDoc(collection(db, "users", session.user.email, "posts"), {

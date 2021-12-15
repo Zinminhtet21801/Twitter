@@ -95,7 +95,7 @@ function Post({ id, post, postPage }) {
             />
           )}
           <div className=" text-[#6e767d] ">
-            <div className="inline-block group" onClick={() => {router.push(`/profile/${session.user.uid}`)}}>
+            <div className="inline-block group" onClick={() => {router.push(`/profile/${post?.id}`)}}>
               <h4
                 className={`font-bold text-[12px] sm:text-base text-[#d9d9d9] group-hover:underline ${
                   !postPage && "inline-block"
@@ -155,7 +155,7 @@ function Post({ id, post, postPage }) {
               </span>
             )}
           </div>
-          {session.user.uid === post?.id ? (
+          {session?.user?.uid === post?.id ? (
             <div
               className="flex items-center space-x-1 group"
               onClick={(e) => {

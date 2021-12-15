@@ -29,7 +29,8 @@ export default NextAuth({
           name: name,
           image : image,
           id : id,
-          createdAt : serverTimestamp()
+          createdAt : serverTimestamp(),
+          email : email
         });
       }
       return true;
