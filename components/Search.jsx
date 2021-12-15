@@ -1,5 +1,6 @@
 import { SearchIcon, XCircleIcon, XIcon } from "@heroicons/react/outline";
 import { useState } from "react";
+import { Dialog } from "@headlessui/react";
 import UserProfileButton from "./UserProfileButton";
 
 const users = [
@@ -46,7 +47,7 @@ const users = [
 ];
 
 const Search = () => {
-  const [input, setInput] = useState();
+  const [input, setInput] = useState("");
   return (
     <>
       <div className="flex justify-between items-center bg-[#202327] p-3 rounded-full relative ">
@@ -65,22 +66,27 @@ const Search = () => {
           />
         </div>
       </div>
-      {input && (
-        <div className="grid grid-cols-1 divide-y divide-opacity-40 divide-gray-500 text-gray-300 ">
-          {users.map((user,index) => (
-            <div className="searchItem" key={index} >
-              <UserProfileButton
-                logout={false}
-                avatar={user.image}
-                name={user.name}
-                tag={user.tag}
-                hover={false}
-                profile={false}
-              />
-            </div>
-          ))}
-        </div>
-      )}
+      {/* <div className="grid grid-cols-1 divide-y divide-opacity-40 divide-gray-500 text-gray-300 "> */}
+      <div>
+      <div className="absolute w-full z-[70] ">
+        {input && (
+          <div className="grid grid-cols-1 divide-y divide-opacity-40 divide-gray-500 text-gray-300 ">
+            {users.map((user, index) => (
+              <div className="searchItem" key={index}>
+                <UserProfileButton
+                  logout={false}
+                  avatar={user.image}
+                  name={user.name}
+                  tag={user.tag}
+                  hover={false}
+                  profile={false}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      </div>
     </>
   );
 };
