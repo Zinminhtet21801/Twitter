@@ -63,7 +63,7 @@ const profile = ({ trendingResults, followResults }) => {
                         >
                             <ArrowLeftIcon className="text-white h-5 " />
                         </div>
-                        Tweet
+                        Profile
                     </div>
                     <div className='h-64 bg-[#2F3336] pt-40 pl-4'>
                         <img src={`${session?.user?.image}`} className='w-36 h-auto rounded-full border-2 border-black'/>

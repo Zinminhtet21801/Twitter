@@ -21,16 +21,17 @@ export default NextAuth({
       return session;
     },
     async signIn({ user, account, profile, credentials }) {
-      const signed = await getDoc(doc(db, "users", user.email))
-      if(!signed.exists()) {
-        console.log(user);
+      const signed = await getDoc(doc(db, "users", user.email));
+      if (!signed.exists()) {
         const { id, name, email, image } = user;
         await setDoc(doc(db, "users", email), {
           name: name,
-          image : image,
-          id : id,
-          createdAt : serverTimestamp(),
-          email : email
+          lowerCaseName: name.toLowerCase(),
+          image: image,
+          id: id,
+          createdAt: serverTimestamp(),
+          email: email,
+          tag: name.split(" ").join("").toLocaleLowerCase(),
         });
       }
       return true;

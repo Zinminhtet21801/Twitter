@@ -9,3 +9,8 @@ export const postIdState = atom({
     key : "postIdState",
     default : ""
 })
+
+export const searchInputs = atom({
+    key : "searchInputs",
+    default : ""
+})

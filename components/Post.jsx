@@ -36,6 +36,8 @@ function Post({ id, post, postPage }) {
   const [likes, setLikes] = useState([]);
   const [liked, setLiked] = useState(false);
   const router = useRouter();
+  const [clickedPlace, setClickedPlace] = useState("");
+
 
   useEffect(
     () =>
@@ -74,15 +76,13 @@ function Post({ id, post, postPage }) {
   };
 
   return (
-    <div
-      className="p-3 flex cursor-pointer border-b border-gray-700 "
-      // onClick={() => router.push(`/${id}`)}
-    >
+    <div className="p-3 z-10 flex cursor-pointer border-b border-gray-700 ">
       {!postPage && (
         <img
           src={post?.userImg}
           alt="Profile Pic"
           className="h-11 w-11 rounded-full mr-3 "
+          onClick={() => router.push(`/profile/${post.id}`)}
         />
       )}
       <div className="flex flex-col space-y-2 w-full ">
@@ -92,19 +92,22 @@ function Post({ id, post, postPage }) {
               src={post?.userImg}
               alt="Profile Pic"
               className="h-11 w-11 rounded-full mr-3 "
+              onClick={() => router.push(`/profile/${post.id}`)}
             />
           )}
           <div className=" text-[#6e767d] ">
-            <div className="inline-block group" onClick={() => {router.push(`/profile/${post?.id}`)}}>
+            <div className="inline-block group">
               <h4
                 className={`font-bold text-[12px] sm:text-base text-[#d9d9d9] group-hover:underline ${
                   !postPage && "inline-block"
                 } `}
+                onClick={() => router.push(`/profile/${post.id}`)}
               >
                 {post?.username}
               </h4>
               <span
                 className={`text-sm sm:text-[15px] ${!postPage && "ml-1.5"} `}
+                onClick={() => router.push(`/profile/${post.id}`)}
               >
                 @{post?.tag}
               </span>
@@ -132,6 +135,7 @@ function Post({ id, post, postPage }) {
           src={post?.image}
           alt=""
           className="rounded-2xl max-h-[700px] object-cover mr-2 "
+          onClick={() => router.push(`/${id}`)}
         />
         <div
           className={`text-[#6e767d] flex justify-between w-10/12 ${

@@ -20,6 +20,6 @@
   }
 
   .searchItem {
-    @apply hover:bg-gray-600 hover:cursor-pointer bg-black p-5 flex overflow-hidden
+    @apply hover:bg-gray-600 hover:cursor-pointer bg-black p-5 flex overflow-hidden;
   }
 }

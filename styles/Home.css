@@ -1,0 +1,42 @@
+.base {
+  position: relative;
+  width: 100%;
+  background-color : black;
+}
+
+@keyframes changewidth {
+  0% {
+    width: 2%;
+    left: 0;
+  }
+  100% {
+    width: 5%;
+    left: 100%;
+  }
+}
+
+.App, .App1, .App2, .App3, .App4 {
+  position: absolute;
+  height: 5px;
+  font-family: sans-serif;
+  text-align: center;
+  background-color: rgb(49, 184, 218);
+  animation-duration: 1.5s;
+  animation-name: changewidth;
+  animation-iteration-count: infinite;
+}
+
+.App1{
+  animation-delay: 0.1s;
+}
+.App2{
+  animation-delay: 0.5s;
+}
+
+.App3{
+  animation-delay: 1s;
+}
+
+.App4{
+  animation-delay: 1.5s;
+}

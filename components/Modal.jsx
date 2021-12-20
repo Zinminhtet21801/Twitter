@@ -37,9 +37,6 @@ function Modal() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  
-  console.log(postId);
-
   const addImageToPost = (event) => {
     const reader = new FileReader();
     if (event.target.files[0]) {
@@ -99,8 +96,6 @@ function Modal() {
 
     router.push(`/${postId}`);
   };
-
-  console.log(loading);
 
   return (
     <div>

@@ -1,7 +1,14 @@
 import { SparklesIcon } from "@heroicons/react/outline";
 import { useEffect, useState } from "react";
 import Input from "./Input";
-import { onSnapshot, query, collection, orderBy } from "firebase/firestore";
+import {
+  onSnapshot,
+  query,
+  collection,
+  orderBy,
+  getDocs,
+  where,
+} from "firebase/firestore";
 import { db } from "../firebase";
 import { useSession } from "next-auth/react";
 import Post from "./Post";
@@ -9,13 +16,45 @@ import Post from "./Post";
 function Feed() {
   const [posts, setPosts] = useState([]);
   const { data: session } = useSession();
-  useEffect(() => {
-    onSnapshot(
-      query(collection(db, "posts"), orderBy("timestamp", "desc")),
-      (snapshot) => setPosts(snapshot.docs)
-    );
-  }, []);
+  const [friendsList, setFriendsList] = useState([]);
+  const [friendsIds, setFriendsIds] = useState([]);
+  const [loading, setLoading] = useState(false);
 
+  const getUserFriendsList = async () => {
+    setLoading(true);
+    const userFriendsSnapshot = await getDocs(
+      collection(db, "users", session?.user?.email, "followed")
+    );
+    let ids = [];
+    userFriendsSnapshot.forEach((doc) => {
+      setFriendsList(doc.data());
+      ids.push(doc.data().id);
+    });
+    setFriendsIds(ids);
+    setLoading(false);
+  };
+
+  const getPosts = async () => {
+    setLoading(true);
+    let postsTemp = [];
+    onSnapshot(
+      query(collection(db, "posts"), where("id", "in", friendsIds)),
+      (snapshot) =>
+        setPosts(
+          snapshot.docs.sort(function (x, y) {
+            return y?.data()?.timestamp?.seconds - x?.data()?.timestamp?.seconds;
+          })
+        )
+    );
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    getUserFriendsList();
+    friendsIds.length > 0 && getPosts();
+  }, [friendsList.length]);
+
+  // console.log(posts);
 
   return (
     <div className="flex-grow border-l border-r border-gray-700 max-w-2xl sm:ml-[73px] xl:ml-[370px] ">

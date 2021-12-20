@@ -32,35 +32,52 @@ const profile = ({ trendingResults, followResults }) => {
   const { data: session } = useSession();
   const [data, setData] = useState([]);
   const [followed, setFollowed] = useState(false);
+  const [user, setUser] = useState();
   const router = useRouter();
   const sameUser = router.query.id === session?.user?.uid;
+  const [loading, setLoading] = useState(false);
+
+  const fetching = async () => {
+    if (loading) {
+      return;
+    }
+    const q = query(
+      collection(db, "posts"),
+      where("id", "==", router.query.id)
+    );
+
+    // if (!sameUser) {
+    //   const userSnapShot = await getDocs(
+    //     query(collection(db, "users"), where("id", "==", router.query.id))
+    //   );
+    //   const dataArray = [];
+    //   userSnapShot.forEach((doc) => dataArray.push(doc.data()));
+    //   setUser(dataArray);
+    // }
+
+    const querySnapShot = await getDocs(q);
+    const dataArray = [];
+    querySnapShot.forEach((doc) => dataArray.push(doc.data()));
+    setData(
+      dataArray.sort(function (x, y) {
+        return y.timestamp.seconds - x.timestamp.seconds;
+      })
+    );
+
+    const followed = await getDoc(
+      doc(db, "users", session?.user?.email, "followed", router.query.id)
+    );
+
+    setFollowed(followed.exists());
+  };
 
   useEffect(() => {
-    const fetching = async () => {
-      const q = query(
-        collection(db, "posts"),
-        where("id", "==", router.query.id)
-      );
-
-      const querySnapShot = await getDocs(q);
-      const dataArray = [];
-      querySnapShot.forEach((doc) => dataArray.push(doc.data()));
-      setData(
-        dataArray.sort(function (x, y) {
-          return y.timestamp.seconds - x.timestamp.seconds;
-        })
-      );
-
-      const followed = await getDoc(
-        doc(db, "users", session?.user?.email, "followed", router.query.id)
-      );
-
-      setFollowed(followed.exists());
-    };
+    setLoading(true);
     fetching();
-  }, []);
+    setLoading(false);
+  }, [router.query.id]);
 
-  // TODo
+
   const followUser = async (userId, username, email) => {
     const followed = await getDoc(
       doc(db, "users", session?.user?.email, "followed", userId)
@@ -77,7 +94,8 @@ const profile = ({ trendingResults, followResults }) => {
       ));
   };
 
-  console.log(data[0]);
+  console.log(user);
+
   return (
     <div>
       <Head>
@@ -98,7 +116,7 @@ const profile = ({ trendingResults, followResults }) => {
             >
               <ArrowLeftIcon className="text-white h-5 " />
             </div>
-            Tweet
+            Profile
           </div>
           <div className="h-64 bg-[#2F3336] pt-40 pl-4">
             <img

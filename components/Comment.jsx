@@ -7,9 +7,9 @@ import {
 } from "@heroicons/react/outline";
 import Moment from "react-moment";
 import ShowMoreText from "react-show-more-text";
+import Image from "next/image";
 
 function Comment({ id, comment }) {
-  console.log(comment.imageComment);
 
   return (
     <div className="p-3 flex cursor-pointer border-b border-gray-700 ">
@@ -50,7 +50,9 @@ function Comment({ id, comment }) {
                 {comment?.comment}
               </ShowMoreText>
             </p>
-            {comment?.imageComment && <img src={comment?.imageComment} alt="commentImage" />}
+            {comment?.imageComment && (
+              <img src={comment?.imageComment} alt="commentImage" />
+            )}
           </div>
           <div className="icon group flex-shrink-0">
             <DotsHorizontalIcon className="h-5 text-[#6e767d] group-hover:text-[#1d9bf0]" />
