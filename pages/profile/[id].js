@@ -28,7 +28,7 @@ function secToDateTime(secs) {
   return t;
 }
 
-const profile = ({ trendingResults, followResults }) => {
+const Profile = ({ trendingResults, followResults }) => {
   const { data: session } = useSession();
   const [data, setData] = useState([]);
   const [followed, setFollowed] = useState(false);
@@ -213,7 +213,7 @@ const profile = ({ trendingResults, followResults }) => {
   );
 };
 
-export default profile;
+export default Profile;
 
 export async function getServerSideProps(context) {
   const trendingResults = await fetch("https://jsonkeeper.com/b/NKEV").then(
