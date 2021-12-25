@@ -38,11 +38,16 @@ function Feed() {
     setLoading(true);
     let postsTemp = [];
     onSnapshot(
-      query(collection(db, "posts"), where("id", "in", friendsIds)),
+      query(
+        collection(db, "posts"),
+        where("id", "in", [session?.user?.uid, ...friendsIds])
+      ),
       (snapshot) =>
         setPosts(
           snapshot.docs.sort(function (x, y) {
-            return y?.data()?.timestamp?.seconds - x?.data()?.timestamp?.seconds;
+            return (
+              y?.data()?.timestamp?.seconds - x?.data()?.timestamp?.seconds
+            );
           })
         )
     );
@@ -51,10 +56,8 @@ function Feed() {
 
   useEffect(() => {
     getUserFriendsList();
-    friendsIds.length > 0 && getPosts();
+    getPosts();
   }, [friendsIds.length]);
-
-  console.log(posts);
 
   return (
     <div className="flex-grow border-l border-r border-gray-700 max-w-2xl sm:ml-[73px] xl:ml-[370px] ">

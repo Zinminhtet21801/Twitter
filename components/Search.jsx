@@ -89,15 +89,17 @@ const Search = () => {
           onChange={(e) => setInput(e.target.value)}
           value={input}
         />
-        <div className="w-6 h-6 z-[60]">
-          <XIcon
-            className="p-1 rounded-full border-none text-gray-500   hover:text-white hover:bg-blue-400  "
-            onClick={() => {
-              setInput("");
-              setSearchUsers([]);
-            }}
-          />
-        </div>
+        {input && (
+          <div className="w-6 h-6 z-[60]">
+            <XIcon
+              className="p-1 rounded-full border-none text-gray-500   hover:text-white hover:bg-blue-400  "
+              onClick={() => {
+                setInput("");
+                setSearchUsers([]);
+              }}
+            />
+          </div>
+        )}
       </div>
       <div>
         <div className="absolute w-full z-[70] ">

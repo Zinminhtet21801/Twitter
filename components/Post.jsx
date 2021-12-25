@@ -36,8 +36,6 @@ function Post({ id, post, postPage }) {
   const [likes, setLikes] = useState([]);
   const [liked, setLiked] = useState(false);
   const router = useRouter();
-  const [clickedPlace, setClickedPlace] = useState("");
-
 
   useEffect(
     () =>
