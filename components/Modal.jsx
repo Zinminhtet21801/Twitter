@@ -49,7 +49,6 @@ function Modal() {
   };
 
   const addEmoji = (event) => {
-    console.log(event);
     let sym = event.unified.split("-");
     let codesArr = [];
     sym.forEach((e) => codesArr.push("0x" + e));

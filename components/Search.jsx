@@ -8,49 +8,6 @@ import { db } from "../firebase";
 import { useRecoilState } from "recoil";
 import { searchInputs } from "../atoms/modalAtom";
 
-const users = [
-  {
-    image: "https://rb.gy/ogau5a",
-    name: "ZEZEfdgssssssssssssssssssss",
-    tag: "zjekjlk",
-  },
-  {
-    image: "https://rb.gy/ogau5a",
-    name: "ZEZE",
-    tag: "zjekjlk",
-  },
-  {
-    image: "https://rb.gy/ogau5a",
-    name: "ZEZE",
-    tag: "zjekjlk",
-  },
-  {
-    image: "https://rb.gy/ogau5a",
-    name: "ZEZE",
-    tag: "zjekjlk",
-  },
-  {
-    image: "https://rb.gy/ogau5a",
-    name: "ZEZE",
-    tag: "zjekjlk",
-  },
-  {
-    image: "https://rb.gy/ogau5a",
-    name: "ZEZE",
-    tag: "zjekjlk",
-  },
-  {
-    image: "https://rb.gy/ogau5a",
-    name: "ZEZE",
-    tag: "zjekjlk",
-  },
-  {
-    image: "https://rb.gy/ogau5a",
-    name: "ZEZE",
-    tag: "zjekjlk",
-  },
-];
-
 const Search = () => {
   const [input, setInput] = useRecoilState(searchInputs);
   const [loading, setLoading] = useState(false);
@@ -115,7 +72,7 @@ const Search = () => {
           {input && !loading && (
             <div className="grid grid-cols-1 divide-y divide-opacity-40 divide-gray-500 text-gray-300 ">
               {searchUsers.map((user, index) => (
-                <Link href={`/profile/${user.id}`} key={index}>
+                <Link href={`/profile/${user.id}`} key={index} passHref >
                   <div className="searchItem">
                     <UserProfileButton
                       logout={false}

@@ -44,15 +44,15 @@ function Post({ id, post, postPage }) {
         orderBy("timestamp", "desc"),
         (snapshot) => setComments(snapshot.docs)
       ),
-    [db, id]
+    [id]
   );
 
   useEffect(
     () =>
-      onSnapshot(collection(db, "posts", id, "likes"), (snapshot) =>
-        setLikes(snapshot.docs)
+      onSnapshot(collection(db, "posts", id, "likes"), (snapshot) =>{
+        setLikes(snapshot.docs)}
       ),
-    [db, id]
+    [id]
   );
 
   useEffect(
@@ -60,7 +60,7 @@ function Post({ id, post, postPage }) {
       setLiked(
         likes.findIndex((like) => like.id === session?.user?.uid) !== -1
       ),
-    [likes]
+    [session?.user?.uid, likes]
   );
 
   const likePost = async () => {
@@ -115,7 +115,10 @@ function Post({ id, post, postPage }) {
               <Moment fromNow>{post?.timestamp?.toDate()}</Moment>
             </span>
             {!postPage && (
-              <p className="text-[#d9d9d9] text-[15px] sm:text-base mt-0.5 " onClick={()=> router.push(`/${id}`)} >
+              <p
+                className="text-[#d9d9d9] text-[15px] sm:text-base mt-0.5 "
+                onClick={() => router.push(`/${id}`)}
+              >
                 {post?.text}
               </p>
             )}

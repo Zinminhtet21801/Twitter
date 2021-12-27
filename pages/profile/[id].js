@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Head from "next/head";
 import { getProviders, getSession, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -22,6 +22,9 @@ import Sidebar from "../../components/Sidebar.jsx";
 import Post from "../../components/Post.jsx";
 import moment from "moment";
 import Moment from "react-moment";
+import { useRecoilState } from "recoil";
+import { modalState } from "../../atoms/modalAtom";
+import Modal from "../../components/Modal.jsx";
 
 function secToDateTime(secs) {
   var t = new Date(1970, 0, 1);
@@ -31,21 +34,22 @@ function secToDateTime(secs) {
 
 const Profile = ({ trendingResults, followResults }) => {
   const { data: session } = useSession();
+  const [modalOpen, isModalOpen] = useRecoilState(modalState);
   const [data, setData] = useState([]);
   const [followed, setFollowed] = useState(false);
   const [user, setUser] = useState();
   const [followers, setFollowers] = useState(0);
   const [followedBy, setFollowedBy] = useState(0);
+  const [postsIds, setPostsIds] = useState();
   const router = useRouter();
   const sameUser = router.query.id === session?.user?.uid;
   const [loading, setLoading] = useState(false);
-
-  console.log(data[0]);
 
   const fetching = async () => {
     if (loading) {
       return;
     }
+
     const q = query(
       collection(db, "posts"),
       where("id", "==", router.query.id)
@@ -57,14 +61,24 @@ const Profile = ({ trendingResults, followResults }) => {
     );
     const userSnapshot = await getDocs(userQuery);
     userSnapshot.forEach((doc) => {
+      //TODO
+      let postsArr = [];
+      onSnapshot(
+        collection(db, "users", doc?.data()?.email, "posts"),
+        (snapshot) => {
+          snapshot.docs.forEach((doc) => postsArr.push(doc.data().postId));
+          setPostsIds(postsArr);
+        }
+      );
+
       onSnapshot(
         collection(db, "users", doc?.data()?.email, "followedBy"),
         (snapshot) => {
           setFollowedBy(snapshot.size);
         }
       );
+
       setUser(doc.data());
-      // console.log(doc.data());
     });
 
     const querySnapShot = await getDocs(q);
@@ -86,7 +100,6 @@ const Profile = ({ trendingResults, followResults }) => {
         collection(db, "users", doc.data().email, "followed")
       );
       setFollowers(userSnapshot.size);
-      console.log(followers);
     });
     if (!session?.user?.email) {
       return;
@@ -273,12 +286,14 @@ const Profile = ({ trendingResults, followResults }) => {
           </div>
           <div className="flex border-l border-r border-gray-700 max-w-2xl pt-3">
             <div className="pb-72 ">
-              {data.map((post, index) => (
-                <Post key={index} id={post.id} post={post} />
-              ))}
+              {postsIds &&
+                data.map((post, index) => (
+                  <Post key={index} id={postsIds[index]} post={post} />
+                ))}
             </div>
           </div>
         </div>
+        {modalOpen && <Modal />}
         <Widget
           trendingResults={trendingResults}
           followResults={followResults}
