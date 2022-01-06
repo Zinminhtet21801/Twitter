@@ -24,7 +24,6 @@ import { useRouter } from "next/router";
 import Moment from "react-moment";
 import "emoji-mart/css/emoji-mart.css";
 import { Picker } from "emoji-mart";
-import { useSelector } from "react-redux";
 import Input from "./Input";
 
 const EditPostModal = () => {
