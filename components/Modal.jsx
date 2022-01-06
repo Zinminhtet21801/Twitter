@@ -37,6 +37,7 @@ function Modal() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
+
   const addImageToPost = (event) => {
     const reader = new FileReader();
     if (event.target.files[0]) {
@@ -58,6 +59,7 @@ function Modal() {
 
   useEffect(
     () =>
+      postId &&
       onSnapshot(doc(db, "posts", postId), (snapshot) => {
         setPost(snapshot.data());
       }),

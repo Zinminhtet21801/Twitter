@@ -5,20 +5,26 @@ import {
   onSnapshot,
   query,
   collection,
-  orderBy,
   getDocs,
   where,
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { useSession } from "next-auth/react";
 import Post from "./Post";
+import { useRecoilState } from "recoil";
+import { editModalState } from "../atoms/modalAtom";
+import EditPostModal from "./EditPostModal";
+import { useRouter } from "next/router";
 
-function Feed() {
+
+function Feed({ isProfile }) {
+  const [isEditModalOpen, setIsEditModalOpen] = useRecoilState(editModalState);
   const [posts, setPosts] = useState([]);
   const { data: session } = useSession();
   const [friendsList, setFriendsList] = useState([]);
   const [friendsIds, setFriendsIds] = useState([]);
   const [loading, setLoading] = useState(false);
+  const router = useRouter()
 
   const getUserFriendsList = async () => {
     setLoading(true);
@@ -36,20 +42,17 @@ function Feed() {
 
   const getPosts = async () => {
     setLoading(true);
+
+    const isProfileQuery = isProfile
+      ? [router.query.id]
+      : [session?.user?.uid, ...friendsIds]
     let postsTemp = [];
-    onSnapshot(
-      query(
-        collection(db, "posts"),
-        where("id", "in", [session?.user?.uid, ...friendsIds])
-      ),
-      (snapshot) =>
-        setPosts(
-          snapshot.docs.sort(function (x, y) {
-            return (
-              y?.data()?.timestamp?.seconds - x?.data()?.timestamp?.seconds
-            );
-          })
-        )
+    onSnapshot(query(collection(db, "posts"), where("id", "in", isProfileQuery)), (snapshot) =>
+      setPosts(
+        snapshot.docs.sort(function (x, y) {
+          return y?.data()?.timestamp?.seconds - x?.data()?.timestamp?.seconds;
+        })
+      )
     );
     setLoading(false);
   };
@@ -57,23 +60,38 @@ function Feed() {
   useEffect(() => {
     getUserFriendsList();
     getPosts();
-  }, [friendsIds.length]);
+  }, [friendsIds.length, posts.length, router.query.id]);
 
   return (
-    <div className="flex-grow border-l border-r border-gray-700 max-w-2xl sm:ml-[73px] xl:ml-[370px] ">
-      <div className="text-[#d9d9d9] flex items-center sm:justify-between py-2 px-3 sticky top-0 z-50 bg-black  border-b border-gray-700 ">
-        <h2 className="text-lg sm:text-xl font-bold">HOME</h2>
-        <div className="hoverAnimation w-9 h-9 flex items-center justify-center xl:px-0 ml-auto">
-          <SparklesIcon className="h-5 text-white" />
+    <>
+      {isEditModalOpen && <EditPostModal />}
+      <div
+        className={`flex-grow  border-gray-700 ${
+          !isProfile
+            ? "border-l border-r max-w-2xl sm:ml-[73px] xl:ml-[370px]"
+            : "w-full"
+        }`}
+      >
+        {!isProfile && (
+          <>
+            <div className="text-[#d9d9d9] flex items-center sm:justify-between py-2 px-3 sticky top-0 z-50 bg-black  border-b border-gray-700 ">
+              <h2 className="text-lg sm:text-xl font-bold">HOME</h2>
+              <div className="hoverAnimation w-9 h-9 flex items-center justify-center xl:px-0 ml-auto">
+                <SparklesIcon className="h-5 text-white" />
+              </div>
+            </div>
+
+            <Input />
+          </>
+        )}
+
+        <div className="pb-72 w-full flex-col ">
+          {posts.map((post) => (
+            <Post key={post.id} id={post.id} post={post.data()} />
+          ))}
         </div>
       </div>
-      <Input />
-      <div className="pb-72 ">
-        {posts.map((post) => (
-          <Post key={post.id} id={post.id} post={post.data()} />
-        ))}
-      </div>
-    </div>
+    </>
   );
 }
 

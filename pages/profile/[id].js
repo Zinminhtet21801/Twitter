@@ -25,6 +25,7 @@ import Moment from "react-moment";
 import { useRecoilState } from "recoil";
 import { modalState } from "../../atoms/modalAtom";
 import Modal from "../../components/Modal.jsx";
+import Feed from "../../components/Feed.jsx";
 
 function secToDateTime(secs) {
   var t = new Date(1970, 0, 1);
@@ -40,7 +41,7 @@ const Profile = ({ trendingResults, followResults }) => {
   const [user, setUser] = useState();
   const [followers, setFollowers] = useState(0);
   const [followedBy, setFollowedBy] = useState(0);
-  const [postsIds, setPostsIds] = useState();
+  const [postsIds, setPostsIds] = useState([]);
   const router = useRouter();
   const sameUser = router.query.id === session?.user?.uid;
   const [loading, setLoading] = useState(false);
@@ -66,7 +67,10 @@ const Profile = ({ trendingResults, followResults }) => {
       onSnapshot(
         collection(db, "users", doc?.data()?.email, "posts"),
         (snapshot) => {
-          snapshot.docs.forEach((doc) => postsArr.push(doc.data().postId));
+          snapshot.docs.forEach((doc) => {
+            postsArr.push(doc.data().postId);
+          });
+
           setPostsIds(postsArr);
         }
       );
@@ -116,7 +120,7 @@ const Profile = ({ trendingResults, followResults }) => {
     setLoading(true);
     fetching();
     setLoading(false);
-  }, [router.query.id]);
+  }, [router.query.id, postsIds.length]);
 
   const followUser = async (userId, username, email) => {
     const followed = await getDoc(
@@ -285,12 +289,14 @@ const Profile = ({ trendingResults, followResults }) => {
             </button>
           </div>
           <div className="flex border-l border-r border-gray-700 max-w-2xl pt-3">
-            <div className="pb-72 ">
+            {/* <div className="pb-72 w-full ">
               {postsIds &&
                 data.map((post, index) => (
                   <Post key={index} id={postsIds[index]} post={post} />
                 ))}
-            </div>
+            </div> */}
+
+            <Feed isProfile />
           </div>
         </div>
         {modalOpen && <Modal />}

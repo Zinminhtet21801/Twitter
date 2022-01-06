@@ -47,7 +47,7 @@ function Sidebar() {
         <SidebarLink text="More" Icon={DotsCircleHorizontalIcon} />
       </div>
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        // onClick={() => setIsOpen(!isOpen)}
         className="text-lg hidden text-white xl:inline ml-auto bg-[#1d9bf0] rounded-full w-56 h-[52px] font-bold shadow-md hover:bg-[#1a8cd8] "
       >
         Tweet

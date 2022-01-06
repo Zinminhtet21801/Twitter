@@ -18,14 +18,15 @@ const Search = () => {
     let users = [];
     const q = query(
       collection(db, "users"),
-      where("lowerCaseName", "==", name)
+      // where("lowerCaseName", "==", name)
     );
 
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
       users.push(doc.data());
     });
-    setSearchUsers(users);
+    const filteredUsers = users.filter(userArray => userArray.lowerCaseName.includes(input))
+    setSearchUsers(filteredUsers);
     setLoading(false);
   };
 
@@ -72,8 +73,14 @@ const Search = () => {
           {input && !loading && (
             <div className="grid grid-cols-1 divide-y divide-opacity-40 divide-gray-500 text-gray-300 ">
               {searchUsers.map((user, index) => (
-                <Link href={`/profile/${user.id}`} key={index} passHref >
-                  <div className="searchItem">
+                <Link href={`/profile/${user.id}`} key={index} passHref>
+                  <div
+                    className="searchItem"
+                    onClick={() => {
+                      setInput("");
+                      setSearchUsers([]);
+                    }}
+                  >
                     <UserProfileButton
                       logout={false}
                       avatar={user.image}

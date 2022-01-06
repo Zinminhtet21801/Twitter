@@ -20,7 +20,7 @@ export default function Home({ trendingResults, followResults, providers }) {
       </Head>
       <main className="bg-black min-h-screen max-w-[1500px] flex  mx-auto">
         <Sidebar />
-        <Feed />
+        <Feed isProfile={false} />
         <Widget
           trendingResults={trendingResults}
           followResults={followResults}
