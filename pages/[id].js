@@ -69,7 +69,7 @@ function PostPage({ trendingResults, followResults, providers }) {
             </div>
             Tweet
           </div>
-          <Post id={id} post={post} />
+          <Post id={id} post={post} isHome={false} />
           {comments.length > 0 && (
             <div className="pb-72">
               {comments.map((comment) => (

@@ -29,10 +29,9 @@ import {
 import { ref, deleteObject } from "firebase/storage";
 import { db, storage } from "../firebase";
 import Moment from "react-moment";
-import Modal from "./Modal";
-import EditPostModal from "./EditPostModal";
+import toast, { Toaster } from 'react-hot-toast';
 
-function Post({ id, post, postPage }) {
+function Post({ id, post, postPage, isHome }) {
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useRecoilState(modalState);
   const [isEditModalOpen, setIsEditModalOpen] = useRecoilState(editModalState);
@@ -43,7 +42,6 @@ function Post({ id, post, postPage }) {
   const router = useRouter();
   const [openEditTextModal, setOpenEditTextModal] = useState(false);
 
-  console.log({id}, post);
 
   const deletePost = async () => {
     deleteDoc(doc(db, "posts", id));
@@ -64,7 +62,7 @@ function Post({ id, post, postPage }) {
         .catch((e) => console.log(e));
     });
 
-    // router.push("/");
+    !isHome && router.push("/")
   };
 
   useEffect(
@@ -105,7 +103,7 @@ function Post({ id, post, postPage }) {
 
   return (
     <div>
-      <div className="p-3 z-10 flex cursor-pointer border-b border-gray-700 ">
+      <div className="p-3 z-10 flex cursor-pointer border-b border-gray-700 w-full ">
         {!postPage && (
           <img
             src={post?.userImg}
@@ -217,7 +215,21 @@ function Post({ id, post, postPage }) {
                 className="flex items-center space-x-1 group"
                 onClick={(e) => {
                   e.stopPropagation();
-                  deletePost();
+                  deletePost().then(res=> toast.success("POST DELETION SUCCESS",{
+                    style : {
+                      fontWeight : 600,
+                      background: '#333',
+                      color: '#fff',
+                      borderRadius: '10px',
+                    }
+                  })).catch(e=> toast.error("POST DELETION FAIL",{
+                    style : {
+                      fontWeight : 600,
+                      background: '#333',
+                      color: '#fff',
+                      borderRadius: '10px',
+                    }
+                  }));
                 }}
               >
                 <div className="icon group-hover:bg-red-600/10">

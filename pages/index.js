@@ -7,8 +7,10 @@ import Modal from "../components/Modal";
 import { useRecoilState } from "recoil";
 import { modalState } from "../atoms/modalAtom";
 import Widget from "../components/Widget";
+import { collection, doc, getDocs } from "firebase/firestore";
+import { db } from "../firebase";
 
-export default function Home({ trendingResults, followResults, providers }) {
+const Home = ({ trendingResults, followResults, providers }) => {
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useRecoilState(modalState);
   if (!session) return <Login providers={providers} />;
@@ -29,7 +31,9 @@ export default function Home({ trendingResults, followResults, providers }) {
       </main>
     </div>
   );
-}
+};
+
+export default Home;
 
 export async function getServerSideProps(context) {
   const trendingResults = await fetch("https://jsonkeeper.com/b/NKEV").then(

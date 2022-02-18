@@ -1,29 +1,16 @@
 import { useRecoilState } from "recoil";
 import { editModalState, modalState, postIdState } from "../atoms/modalAtom";
-import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   onSnapshot,
   doc,
-  addDoc,
-  collection,
-  serverTimestamp,
-  updateDoc,
 } from "@firebase/firestore";
-import { getDownloadURL, ref, uploadString } from "@firebase/storage";
-import { db, storage } from "../firebase";
-import { useSession } from "next-auth/react";
+import { db } from "../firebase";
 import {
-  CalendarIcon,
-  ChartBarIcon,
-  EmojiHappyIcon,
-  PhotographIcon,
   XIcon,
 } from "@heroicons/react/outline";
-import { useRouter } from "next/router";
-import Moment from "react-moment";
 import "emoji-mart/css/emoji-mart.css";
-import { Picker } from "emoji-mart";
+
 import Input from "./Input";
 
 const EditPostModal = () => {
@@ -35,24 +22,6 @@ const EditPostModal = () => {
   const [comment, setComment] = useState("");
   const [imageComment, setImageComment] = useState("");
 
-  const addImageToPost = (event) => {
-    const reader = new FileReader();
-    if (event.target.files[0]) {
-      reader.readAsDataURL(event.target.files[0]);
-    }
-
-    reader.onload = (readerEvent) => {
-      setImageComment(readerEvent.target.result);
-    };
-  };
-
-  const addEmoji = (event) => {
-    let sym = event.unified.split("-");
-    let codesArr = [];
-    sym.forEach((e) => codesArr.push("0x" + e));
-    let emoji = String.fromCodePoint(...codesArr);
-    setComment(comment + emoji);
-  };
 
   useEffect(
     () =>

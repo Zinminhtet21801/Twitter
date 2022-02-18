@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Head from "next/head";
+import Image from "next/image";
 import { getProviders, getSession, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { ArrowLeftIcon, CalendarIcon } from "@heroicons/react/outline";
@@ -45,7 +46,11 @@ const Profile = ({ trendingResults, followResults }) => {
   const router = useRouter();
   const sameUser = router.query.id === session?.user?.uid;
   const [loading, setLoading] = useState(false);
+  const [setProfile, setSetProfile] = useState(false);
 
+  /**
+   * It fetches the data from the database and sets the state of the component.
+   */
   const fetching = async () => {
     if (loading) {
       return;
@@ -120,7 +125,7 @@ const Profile = ({ trendingResults, followResults }) => {
     setLoading(true);
     fetching();
     setLoading(false);
-  }, [router.query.id, postsIds.length]);
+  }, [router.query.id, postsIds.length, followers, followedBy]);
 
   const followUser = async (userId, username, email) => {
     const followed = await getDoc(
@@ -207,32 +212,54 @@ const Profile = ({ trendingResults, followResults }) => {
             Profile
           </div>
           <div className="h-64 bg-[#2F3336] pt-40 pl-4">
-            <img
-              src={`${user?.image}`}
-              className="w-36 h-auto rounded-full border-2 border-black"
-            />
+            {/* TODO  */}
+            {/* {user?.coverPhoto && (
+              <div onClick={()=> setProfile && console.log("iy") } >
+                <Image src={user?.coverPhoto} layout="fill" alt="" />
+              </div>
+            )} */}
+
+            {/* TODO make user change profile and cover photo */}
+            <div onClick={() => setProfile && console.log("SHIT")}>
+              <img
+                src={user?.image}
+                alt=""
+                className="w-36 h-auto rounded-full border-2 border-black"
+              />
+            </div>
           </div>
 
           <div className="flex justify-end py-3 pr-5">
-            <button
-              className={` ${
-                !followed
-                  ? "bg-blue-400 hover:bg-pink-100 "
-                  : " hover:bg-red-600  "
-              } border border-gray-300 rounded-full py-1 px-4  transition ease-linear duration-200`}
-              onClick={() =>
-                !sameUser &&
-                followUser(router.query.id, user?.name, user?.email)
-              }
-            >
-              <span
-                className={`font-semibold ${
-                  !followed ? "text-black " : "text-white"
-                }`}
+            {sameUser ? (
+              <button
+                className={` bg-[#1d9bf0] hover:bg-[#5bbbff] border border-gray-300 rounded-full py-1 px-4  transition ease-linear duration-200`}
+                onClick={() => setSetProfile(true)}
               >
-                {followed ? "Unfollow" : sameUser ? "Set up profile" : "Follow"}
-              </span>
-            </button>
+                <span className={`font-semibold text-white }`}>
+                  Set up profile
+                </span>
+              </button>
+            ) : (
+              <button
+                className={`border border-gray-300 ${
+                  !followed
+                    ? "bg-[#1d9bf0] hover:bg-[#5bbbff] "
+                    : "hover:bg-[#f4212f32] border border-[#67070F] "
+                }  rounded-full py-1 px-4  transition ease-linear duration-200`}
+                onClick={() =>
+                  !sameUser &&
+                  followUser(router.query.id, user?.name, user?.email)
+                }
+              >
+                <span
+                  className={`font-semibold ${
+                    !followed ? "text-black " : "text-red-600"
+                  }`}
+                >
+                  {followed ? "Unfollow" : "Follow"}
+                </span>
+              </button>
+            )}
           </div>
 
           <div className="text-gray-300 text-opacity-60 pl-4 pt-4">
@@ -289,14 +316,7 @@ const Profile = ({ trendingResults, followResults }) => {
             </button>
           </div>
           <div className="flex border-l border-r border-gray-700 max-w-2xl pt-3">
-            {/* <div className="pb-72 w-full ">
-              {postsIds &&
-                data.map((post, index) => (
-                  <Post key={index} id={postsIds[index]} post={post} />
-                ))}
-            </div> */}
-
-            <Feed isProfile />
+            <Feed isProfile isHome />
           </div>
         </div>
         {modalOpen && <Modal />}

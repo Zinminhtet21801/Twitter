@@ -17,7 +17,7 @@ import EditPostModal from "./EditPostModal";
 import { useRouter } from "next/router";
 
 
-function Feed({ isProfile }) {
+function Feed({ isProfile, isHome }) {
   const [isEditModalOpen, setIsEditModalOpen] = useRecoilState(editModalState);
   const [posts, setPosts] = useState([]);
   const { data: session } = useSession();
@@ -87,7 +87,7 @@ function Feed({ isProfile }) {
 
         <div className="pb-72 w-full flex-col ">
           {posts.map((post) => (
-            <Post key={post.id} id={post.id} post={post.data()} />
+            <Post key={post.id} id={post.id} post={post.data()} isHome />
           ))}
         </div>
       </div>
