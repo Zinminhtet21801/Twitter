@@ -29,7 +29,7 @@ import {
 import { ref, deleteObject } from "firebase/storage";
 import { db, storage } from "../firebase";
 import Moment from "react-moment";
-import toast, { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from "react-hot-toast";
 
 function Post({ id, post, postPage, isHome }) {
   const { data: session } = useSession();
@@ -41,7 +41,6 @@ function Post({ id, post, postPage, isHome }) {
   const [liked, setLiked] = useState(false);
   const router = useRouter();
   const [openEditTextModal, setOpenEditTextModal] = useState(false);
-
 
   const deletePost = async () => {
     deleteDoc(doc(db, "posts", id));
@@ -62,7 +61,7 @@ function Post({ id, post, postPage, isHome }) {
         .catch((e) => console.log(e));
     });
 
-    !isHome && router.push("/")
+    !isHome && router.push("/");
   };
 
   useEffect(
@@ -77,7 +76,8 @@ function Post({ id, post, postPage, isHome }) {
 
   useEffect(
     () =>
-      id && onSnapshot(collection(db, "posts", id, "likes"), (snapshot) => {
+      id &&
+      onSnapshot(collection(db, "posts", id, "likes"), (snapshot) => {
         setLikes(snapshot.docs);
       }),
     [id]
@@ -154,14 +154,14 @@ function Post({ id, post, postPage, isHome }) {
             </div>
 
             {/* TODO */}
-            <div className=" icon group flex-shrink-0 ml-auto ">
+            <div
+              className=" icon group flex-shrink-0 ml-auto "
+              onClick={() => {
+                setOpenEditTextModal(!openEditTextModal);
+              }}
+            >
               <div className={` relative `}>
-                <DotsHorizontalIcon
-                  className="h-5 text-[#6e767d] group-hover:text-[#1d9bf0] "
-                  onClick={() => {
-                    setOpenEditTextModal(!openEditTextModal);
-                  }}
-                />
+                <DotsHorizontalIcon className="h-5 text-[#6e767d] group-hover:text-[#1d9bf0] " />
                 {openEditTextModal && (
                   <button
                     className={` text-white absolute top-7 right-0 rounded-md bg-gray-400 w-[50px] `}
@@ -215,21 +215,27 @@ function Post({ id, post, postPage, isHome }) {
                 className="flex items-center space-x-1 group"
                 onClick={(e) => {
                   e.stopPropagation();
-                  deletePost().then(res=> toast.success("POST DELETION SUCCESS",{
-                    style : {
-                      fontWeight : 600,
-                      background: '#333',
-                      color: '#fff',
-                      borderRadius: '10px',
-                    }
-                  })).catch(e=> toast.error("POST DELETION FAIL",{
-                    style : {
-                      fontWeight : 600,
-                      background: '#333',
-                      color: '#fff',
-                      borderRadius: '10px',
-                    }
-                  }));
+                  deletePost()
+                    .then((res) =>
+                      toast.success("POST DELETION SUCCESS", {
+                        style: {
+                          fontWeight: 600,
+                          background: "#333",
+                          color: "#fff",
+                          borderRadius: "10px",
+                        },
+                      })
+                    )
+                    .catch((e) =>
+                      toast.error("POST DELETION FAIL", {
+                        style: {
+                          fontWeight: 600,
+                          background: "#333",
+                          color: "#fff",
+                          borderRadius: "10px",
+                        },
+                      })
+                    );
                 }}
               >
                 <div className="icon group-hover:bg-red-600/10">
